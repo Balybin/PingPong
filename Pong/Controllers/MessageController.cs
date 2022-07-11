@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pong.Model;
 using Pong.Services;
+using System.Text.Json;
 
 namespace Pong.Controllers
 {
@@ -8,12 +9,14 @@ namespace Pong.Controllers
     [Route("[controller]")]
     public class MessageController : ControllerBase
     {
-        public MessageController(IMessageService msgService)
+        public MessageController(IMessageService msgService, ILogger<MessageController> logger)
         {
             this._msgService = msgService;
+            this._logger = logger;
         }
 
         private readonly IMessageService _msgService;
+        private readonly ILogger<MessageController> _logger;
 
         [HttpGet("getByUserId/{id}")]
         public async Task<IEnumerable<MessageDto>> getByUserId(int id)
@@ -52,10 +55,19 @@ namespace Pong.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<MessageDto>> CreateMessage([FromBody] CreateMessageObject msg)
         {
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Cant create message" + JsonSerializer.Serialize(msg));
+                return BadRequest();
+            }
 
             var res = await _msgService.AddMessage(new MessageDto { Message = msg.Message, User = msg.User });
-            if (res == null) return NotFound();
+            if (res == null)
+            {
+                _logger.LogError("Cant create message" + JsonSerializer.Serialize(msg));
+                return NotFound();
+            }
+            _logger.LogDebug("Message object was created:" + JsonSerializer.Serialize(res));
             return Ok(res);
 
         }
