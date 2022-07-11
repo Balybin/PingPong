@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(builder =>
 });
 
 //DI
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 
 var app = builder.Build();

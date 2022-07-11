@@ -11,6 +11,7 @@ namespace Pong.Model
         [Required]
         public int User { get; set; }
         [Required]
+        [MinLength(1)]
         public string Message { get; set; }
         public int Status { get; set; }
     }

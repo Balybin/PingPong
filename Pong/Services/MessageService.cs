@@ -1,52 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Pong.Model;
+﻿using Pong.Model;
 
 namespace Pong.Services
 {
     public class MessageService : IMessageService
     {
-        public MessageService(AppDbContext db)
+        public MessageService(IMessageRepository messageRepository)
         {
-            this._db = db;
+            this._messageRepository = messageRepository;
         }
 
-        private readonly AppDbContext _db;
-
-        public async Task<MessageDto?> GetMessageById(int id)
-        {
-            return await _db.Messages.Where(x => x.Id == id).FirstOrDefaultAsync();
-        }
-
+        private readonly IMessageRepository _messageRepository;
         public async Task<IEnumerable<MessageDto>> GetMessagesByUser(int user)
         {
-            return await _db.Messages.Where(x => x.User == user).ToListAsync();
+            return await _messageRepository.GetMessagesByUser(user);
         }
-
-        public async Task<MessageDto> AddMessage(MessageDto msg)
+        public async Task<MessageDto?> GetMessageById(int id)
         {
-            var res = await _db.Messages.AddAsync(msg);
-            await _db.SaveChangesAsync();
-            return res.Entity;
+            return await _messageRepository.GetMessageById(id);
         }
-
-        public async Task<MessageDto?> DeleteMessage(int id)
+        public async Task<MessageDto?> AddMessage(MessageDto msg)
         {
-            var item = await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
-            if (item == null) return null;
-            _db.Messages.Remove(item);
-            await _db.SaveChangesAsync();
-            return item;
+            return await _messageRepository.AddMessage(msg);
         }
-
         public async Task<MessageDto?> EditMessage(MessageDto msg)
         {
-            var item = await _db.Messages.FirstOrDefaultAsync(x => x.Id == msg.Id);
-            if (item == null) return null;
-            item.User = msg.User;
-            item.Status = msg.Status;
-            item.Message = msg.Message;
-            await _db.SaveChangesAsync();
-            return item;
+            return await _messageRepository.EditMessage(msg);
         }
+        public async Task<MessageDto?> DeleteMessage(int id)
+        {
+            return await DeleteMessage(id);
+        }
+
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Pong.Services
 {
-    public interface IMessageService
+    public interface IMessageRepository
     {
         public Task<IEnumerable<MessageDto>> GetMessagesByUser(int user);
         public Task<MessageDto?> GetMessageById(int id);

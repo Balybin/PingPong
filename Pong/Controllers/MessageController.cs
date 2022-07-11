@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Pong.Model;
 using Pong.Services;
-using System.Data.Entity.Validation;
 
 namespace Pong.Controllers
 {
@@ -12,21 +10,21 @@ namespace Pong.Controllers
     {
         public MessageController(IMessageService msgService)
         {
-            this._msgSErvice = msgService;
+            this._msgService = msgService;
         }
 
-        private readonly IMessageService _msgSErvice;
+        private readonly IMessageService _msgService;
 
         [HttpGet("getByUserId/{id}")]
         public async Task<IEnumerable<MessageDto>> getByUserId(int id)
         {
-            return await _msgSErvice.GetMessagesByUser(id);
+            return await _msgService.GetMessagesByUser(id);
         }
 
         [HttpGet("getById/{id}")]
         public async Task<ActionResult<IEnumerable<MessageDto>>> getById(int id)
         {
-            var result = await _msgSErvice.GetMessageById(id);
+            var result = await _msgService.GetMessageById(id);
             if (result == null)
             {
                 return NotFound();
@@ -37,15 +35,16 @@ namespace Pong.Controllers
         [HttpPut("edit")]
         public async Task<ActionResult<MessageDto>> editMessage([FromBody] MessageDto msg)
         {
-            var result = await _msgSErvice.EditMessage(msg);
-            if( result == null) return NotFound();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = await _msgService.EditMessage(msg);
+            if (result == null) return NotFound();
             return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<ActionResult<MessageDto>> deleteMessage(int id)
         {
-            var result = await _msgSErvice.DeleteMessage(id);
+            var result = await _msgService.DeleteMessage(id);
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -53,20 +52,12 @@ namespace Pong.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<MessageDto>> CreateMessage([FromBody] CreateMessageObject msg)
         {
-            if (msg.Message == null) return BadRequest();
-            try
-            {
-                var res = await _msgSErvice.AddMessage(new MessageDto { Message = msg.Message, User = msg.User });
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                if (ex is InvalidOperationException || ex is DbUpdateException || ex is DbEntityValidationException)
-                {
-                    return BadRequest();
-                }
-                else throw ex;
-            }
+            if (!ModelState.IsValid) return BadRequest();
+
+            var res = await _msgService.AddMessage(new MessageDto { Message = msg.Message, User = msg.User });
+            if (res == null) return NotFound();
+            return Ok(res);
+
         }
     }
 }
