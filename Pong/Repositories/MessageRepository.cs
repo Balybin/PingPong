@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pong.Model;
-using System.Data.Entity.Validation;
 
 namespace Pong.Services
 {
@@ -23,45 +22,25 @@ namespace Pong.Services
             return await _db.Messages.Where(x => x.User == user).ToListAsync();
         }
 
-        public async Task<MessageDto?> AddMessage(MessageDto msg)
+        public async Task<MessageDto> AddMessage(MessageDto msg)
         {
-            try
-            {
                 var res = await _db.Messages.AddAsync(msg);
                 await _db.SaveChangesAsync();
                 return res.Entity;
-            }
-            catch (Exception ex) when (ex is InvalidOperationException || ex is DbUpdateException || ex is DbEntityValidationException)
-            {
-                return null;
-            }
         }
 
-        public async Task<MessageDto?> DeleteMessage(int id)
+        public async Task<MessageDto> DeleteMessage(MessageDto msg)
         {
-            var item = await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
-            if (item == null) return null;
-            _db.Messages.Remove(item);
+            var res = _db.Messages.Remove(msg).Entity;
             await _db.SaveChangesAsync();
-            return item;
+            return res;
         }
 
-        public async Task<MessageDto?> EditMessage(MessageDto msg)
+        public async Task<MessageDto> EditMessage(MessageDto msg)
         {
-            try
-            {
-                var item = await _db.Messages.FirstOrDefaultAsync(x => x.Id == msg.Id);
-                if (item == null) return null;
-                item.User = msg.User;
-                item.Status = msg.Status;
-                item.Message = msg.Message;
-                await _db.SaveChangesAsync();
-                return item;
-            }
-            catch (Exception ex) when (ex is InvalidOperationException || ex is DbUpdateException || ex is DbEntityValidationException)
-            {
-                return null;
-            }
+            var res = _db.Messages.Update(msg);
+            await _db.SaveChangesAsync();
+            return res.Entity;
         }
     }
 }
