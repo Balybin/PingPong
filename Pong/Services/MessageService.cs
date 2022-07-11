@@ -28,7 +28,7 @@ namespace Pong.Services
         }
         public async Task<MessageDto?> DeleteMessage(int id)
         {
-            return await DeleteMessage(id);
+            return await _messageRepository.DeleteMessage(id);
         }
 
     }

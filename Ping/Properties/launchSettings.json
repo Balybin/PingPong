@@ -1,0 +1,29 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    },
+    "getById ": {
+      "commandName": "Project",
+      "commandLineArgs": "https://localhost:7054/ getById 5"
+    },
+    "getByUserId": {
+      "commandName": "Project",
+      "commandLineArgs": "https://localhost:7054/ getByUserId 1"
+    },
+    "delete": {
+      "commandName": "Project",
+      "commandLineArgs": "https://localhost:7054/ delete 1"
+    },
+    "create": {
+      "commandName": "Project",
+      "commandLineArgs": "https://localhost:7054/ create 1 blahblah"
+    },
+    "edit": {
+      "commandName": "Project",
+      "commandLineArgs": "https://localhost:7054/ edit 5 1 message 3"
+    }
+  }
+}
