@@ -2,7 +2,6 @@
 using Pong.Model;
 using System.Text;
 using System.Text.Json;
-using System.Web;
 
 HttpClient client = new HttpClient();
 
@@ -57,7 +56,7 @@ else if (command == "delete")
     {
         Uri uri = new Uri(url);
         client.BaseAddress = uri;
-        var response = await client.GetStringAsync("/Message/delete/" + id);
+        var response = await client.DeleteAsync("/Message/delete/" + id);
         Console.WriteLine("Result:");
         Console.WriteLine(response);
         return;
